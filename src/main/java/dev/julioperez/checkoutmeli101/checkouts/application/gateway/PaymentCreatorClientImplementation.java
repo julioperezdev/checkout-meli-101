@@ -1,7 +1,8 @@
-package dev.julioperez.checkoutmeli101.checkouts.application.createPayment;
+package dev.julioperez.checkoutmeli101.checkouts.application.gateway;
 
 import dev.julioperez.checkoutmeli101.checkouts.domain.dto.PaymentRequest;
 import dev.julioperez.checkoutmeli101.checkouts.domain.dto.PaymentResponse;
+import dev.julioperez.checkoutmeli101.checkouts.domain.model.Payment;
 import dev.julioperez.checkoutmeli101.checkouts.domain.ports.PaymentCreatorClient;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -11,14 +12,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentCreatorCreator implements PaymentCreatorClient {
+public class PaymentCreatorClientImplementation implements PaymentCreatorClient {
 
     private static final String HOST = "https://api.mercadopago.com/v1/payments";
 
@@ -28,9 +29,10 @@ public class PaymentCreatorCreator implements PaymentCreatorClient {
             HttpPost paymentSchema = paymentRequestBuilder(paymentRequest);
             CloseableHttpResponse response = client.execute(paymentSchema);
             HttpEntity paymentResponseHttp = response.getEntity();
-            return paymentResponseBuilder(paymentResponseHttp);
+            return new PaymentResponse();
         }
     }
+
 
     private HttpPost paymentRequestBuilder(PaymentRequest paymentRequest) throws UnsupportedEncodingException {
         HttpPost paymentCreation = new HttpPost(HOST);
