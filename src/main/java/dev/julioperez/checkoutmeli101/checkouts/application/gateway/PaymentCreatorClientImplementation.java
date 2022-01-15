@@ -2,17 +2,16 @@ package dev.julioperez.checkoutmeli101.checkouts.application.gateway;
 
 import dev.julioperez.checkoutmeli101.checkouts.domain.dto.PaymentRequest;
 import dev.julioperez.checkoutmeli101.checkouts.domain.dto.PaymentResponse;
-import dev.julioperez.checkoutmeli101.checkouts.domain.model.Payment;
 import dev.julioperez.checkoutmeli101.checkouts.domain.ports.PaymentCreatorClient;
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.springframework.web.client.RestTemplate;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,15 +28,18 @@ public class PaymentCreatorClientImplementation implements PaymentCreatorClient 
             HttpPost paymentSchema = paymentRequestBuilder(paymentRequest);
             CloseableHttpResponse response = client.execute(paymentSchema);
             HttpEntity paymentResponseHttp = response.getEntity();
+            EntityUtils.consume(paymentResponseHttp);
+
             return new PaymentResponse();
         }
     }
 
 
     private HttpPost paymentRequestBuilder(PaymentRequest paymentRequest) throws UnsupportedEncodingException {
+
         HttpPost paymentCreation = new HttpPost(HOST);
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        List<NameValuePair> params = new ArrayList<>();
 
         params.add(new BasicNameValuePair("binary_mode", paymentRequest.getBinaryMode().toString()));
         params.add(new BasicNameValuePair("application_fee", paymentRequest.getApplicationFee().toString()));
